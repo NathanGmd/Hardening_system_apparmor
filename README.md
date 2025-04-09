@@ -83,3 +83,52 @@ Gravité:        4
 Adding owner /home/*/ r, to profile.
 ```
 
+La commande pour voir l'état des profils est :
+```
+sudo aa-status
+```
+Cela liste tout les profils et leurs état actuel.\
+Je vais donc passer mon profils /usr/bin/ls en mode enforce et voir ce qu'il se passe 
+```
+sudo aa-enforce /usr/bin/ls
+```
+Dans un premier temps, lors de mon scan, je n'ai pas fais de ls simple, juste des ls /home par exemple, donc quand je fais un ls global simple, je me prend une "permission denied". Ce que l'on peut d'ailleurs constater dans les logs avec la commande : 
+```
+sudo dmesg | grep apparmor
+```
+```
+[ 9667.359156] audit: type=1400 audit(1744203801.442:365): apparmor="DENIED" operation="open" class="file" profile="/usr/bin/ls" name="/" pid=108836 comm="ls" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+```
+Pour améliorer mon profils, je vais repasser mon profils en mode complain, faire le maximum de test avec ma commande ls puis re définir mes permissions pour chaque event de ls en utilisant la commande :
+```
+sudo aa-logprof
+```
+Je remarque en mode complain que par exemple mon ls dev ne passe pas : 
+```
+[12748.146052] audit: type=1400 audit(1744206882.107:427): apparmor="ALLOWED" operation="file_perm" class="file" profile="/usr/bin/ls" name="/dev/" pid=109268 comm="ls" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+```
+Je l'autorise en écrivant directement dans /etc/apparmor.d/usr.bin.ls :
+```
+abi <abi/3.0>,
+
+include <tunables/global>
+
+/usr/bin/ls flags=(complain) {
+  include <abstractions/base>
+  include <abstractions/opencl-pocl>
+
+  /etc/apparmor.d/ r,
+  /home/ r,
+  /srv/ r,
+  /usr/bin/ls mr,
+  /var/ r,
+  /etc/ r,
+  /dev/ r,
+  owner /home/*/ r,
+
+}
+```
+De ce fais je peux maintenant accéder a ls dev.
+  
+
+
