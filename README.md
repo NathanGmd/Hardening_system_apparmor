@@ -56,4 +56,10 @@ Chain OUTPUT (policy ACCEPT 957 packets, 78711 bytes)
  pkts bytes target     prot opt in     out     source               destination
 ```
 80 ouvert pour le httpd plus tard.
-# 3.3 Installation d’un serveur Web:
+
+### 3.3 Installation d’un serveur Web:
+
+AppArmor peut fonctionner de différentes façons selon le niveau de contrôle qu’on veut appliquer sur un programme. Il peut soit surveiller sans bloquer, soit bloquer pour de vrai, soit ne rien faire du tout. Le mode le plus utilisé en production, c’est le mode enforce, où le profil est strictement appliqué : si le programme tente une action qui n’est pas prévue, c’est bloqué. On passe souvent par le mode complain, qui permet de voir ce que le programme ferait en dehors du cadre sans l’empêcher de fonctionner. Cela permet d'ajuster les règles sans casser les apps. Sinon on désactive.\
+Le programme va se heurter à des refus d’accès un peu partout, que ce soit pour lire, écrire ou accéder à certaines ressources. Ces blocages peuvent entraîner des dysfonctionnements, voire empêcher le programme de démarrer correctement. C’est pour ça que le passage en enforce doit se faire après avoir bien testé et affiné le profil.
+
+### 3.4 Configuration d’un profil Apparmor
