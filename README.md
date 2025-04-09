@@ -63,3 +63,23 @@ AppArmor peut fonctionner de différentes façons selon le niveau de contrôle q
 Le programme va se heurter à des refus d’accès un peu partout, que ce soit pour lire, écrire ou accéder à certaines ressources. Ces blocages peuvent entraîner des dysfonctionnements, voire empêcher le programme de démarrer correctement. C’est pour ça que le passage en enforce doit se faire après avoir bien testé et affiné le profil.
 
 ### 3.4 Configuration d’un profil Apparmor
+
+Il faut penser a modifier dans logprof.conf, dans la partie Qualifier, la ligne "/usr/bin/ls = icn" et tout simplement la supprimer. Ce sont des sécurités d'apparmor pour ne pas tout casser.
+Pour générer un profils de base pour la commande linux :
+```
+sudo aa-genprof /bin/ls
+```
+Une fois la commande lancé, il faut ouvrir un nouveau terminal et exécuter plusieurs fois la commande ls dans différents contexte puis retourner sur la génération du profils et appuyer sur scan afin que apparmor puisse scanner les logs.
+Puis pour chaque event de ls, il faudra informer apparmor si l'on autorise ou non (cf exemple) :
+```
+Profil:         /usr/bin/ls
+Chemin d'accès: /home/ngermond/
+Nouveau mode:   owner r
+Gravité:        4
+
+ [1 - owner /home/*/ r,]
+  2 - owner /home/ngermond/ r,
+(A)llow / [(D)eny] / (I)gnore / (G)lob / Glob with (E)xtension / (N)ew / Audi(t) / (O)wner permissions off / Abo(r)t / (F)inish
+Adding owner /home/*/ r, to profile.
+```
+
