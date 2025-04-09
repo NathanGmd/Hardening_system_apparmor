@@ -130,5 +130,55 @@ include <tunables/global>
 ```
 De ce fais je peux maintenant accéder a ls dev.
   
+### 3.5 Durcissement de la configuration d’Apparmor
 
+Afin de durcir ma configuration de SElinux je m'appuie sur le CIS Rocky linux 9
+Benchmark V2, notamment la partie faisant un focus sur SElinux :
+![image](https://github.com/user-attachments/assets/fab2d80e-5451-4a65-b67f-07488384db15)
 
+Première constatation :
+```
+ngermond@ngermond-VirtualBox:/$ sudo grep "^\s*linux" /boot/grub/grub.cfg | grep -v "apparmor=1"
+        linux   /boot/vmlinuz-6.11.0-21-generic root=UUID=c319f800-97b3-4ca7-81e8-75f52647f5b1 ro  quiet splash $vt_handoff
+                linux   /boot/vmlinuz-6.11.0-21-generic root=UUID=c319f800-97b3-4ca7-81e8-75f52647f5b1 ro  quiet splash $vt_handoff
+                linux   /boot/vmlinuz-6.11.0-21-generic root=UUID=c319f800-97b3-4ca7-81e8-75f52647f5b1 ro recovery nomodeset dis_ucode_ldr
+                linux   /boot/vmlinuz-6.11.0-17-generic root=UUID=c319f800-97b3-4ca7-81e8-75f52647f5b1 ro  quiet splash $vt_handoff
+                linux   /boot/vmlinuz-6.11.0-17-generic root=UUID=c319f800-97b3-4ca7-81e8-75f52647f5b1 ro recovery nomodeset dis_ucode_ldr
+        linux    /boot/memtest86+x64.bin
+        linux    /boot/memtest86+x64.bin console=ttyS0,115200
+ngermond@ngermond-VirtualBox:/$ sudo grep "^\s*linux" /boot/grub/grub.cfg | grep -v "security=apparmor"
+        linux   /boot/vmlinuz-6.11.0-21-generic root=UUID=c319f800-97b3-4ca7-81e8-75f52647f5b1 ro  quiet splash $vt_handoff
+                linux   /boot/vmlinuz-6.11.0-21-generic root=UUID=c319f800-97b3-4ca7-81e8-75f52647f5b1 ro  quiet splash $vt_handoff
+                linux   /boot/vmlinuz-6.11.0-21-generic root=UUID=c319f800-97b3-4ca7-81e8-75f52647f5b1 ro recovery nomodeset dis_ucode_ldr
+                linux   /boot/vmlinuz-6.11.0-17-generic root=UUID=c319f800-97b3-4ca7-81e8-75f52647f5b1 ro  quiet splash $vt_handoff
+                linux   /boot/vmlinuz-6.11.0-17-generic root=UUID=c319f800-97b3-4ca7-81e8-75f52647f5b1 ro recovery nomodeset dis_ucode_ldr
+        linux    /boot/memtest86+x64.bin
+        linux    /boot/memtest86+x64.bin console=ttyS0,115200
+ngermond@ngermond-VirtualBox:/$
+```
+
+Ajout de "GRUB_CMDLINE_LINUX="apparmor=1 security=apparmor" au fichier /etc/default/grub pour resoudre le problème.
+
+Vérification des profils apparmor :
+
+```
+ngermond@ngermond-VirtualBox:/etc/default$ sudo apparmor_status | grep profiles
+155 profiles are loaded.
+58 profiles are in enforce mode.
+6 profiles are in complain mode.
+0 profiles are in prompt mode.
+0 profiles are in kill mode.
+91 profiles are in unconfined mode.
+5 processes have profiles defined.
+```
+On notera qu'il y a beaucoup de profiles unconfined, ils sont lié a des applications qui ne sont pas installées sur la machine.\
+\
+Finalement, toujours grâce à un audit lynis, l'Hardening index de ma machine trouvera
+un score de 73 :
+```
+  Lynis security scan details:
+
+  Hardening index : 73 [##############      ]
+  Tests performed : 277
+  Plugins enabled : 2
+```
