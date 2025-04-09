@@ -42,17 +42,18 @@ Audit ssh par lynis du serveur :
 Configuration du firewall :
 
 ```
-ngermond@ngermond-VirtualBox:~$ sudo iptables -L -v -n
-Chain INPUT (policy DROP 111 packets, 19662 bytes)
+ngermond@ngermond-VirtualBox:~/lynis$ sudo iptables -L -v -n
+Chain INPUT (policy DROP 507 packets, 47134 bytes)
  pkts bytes target     prot opt in     out     source               destination
-  841 66393 ACCEPT     6    --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:2222
-    0     0 ACCEPT     6    --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:80
-   27  3054 ACCEPT     0    --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+52941 3968K ACCEPT     6    --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:2222
+   12  1642 ACCEPT     6    --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:80
+ 1104 4383K ACCEPT     0    --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+   44  3534 ACCEPT     0    --  lo     *       0.0.0.0/0            0.0.0.0/0
 
 Chain FORWARD (policy DROP 0 packets, 0 bytes)
  pkts bytes target     prot opt in     out     source               destination
 
-Chain OUTPUT (policy ACCEPT 957 packets, 78711 bytes)
+Chain OUTPUT (policy ACCEPT 55223 packets, 5086K bytes)
  pkts bytes target     prot opt in     out     source               destination
 ```
 80 ouvert pour le httpd plus tard.
