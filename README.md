@@ -56,4 +56,4 @@ Chain OUTPUT (policy ACCEPT 957 packets, 78711 bytes)
  pkts bytes target     prot opt in     out     source               destination
 ```
 80 ouvert pour le httpd plus tard.
-#3.3 Installation d’un serveur Web:
+# 3.3 Installation d’un serveur Web:
